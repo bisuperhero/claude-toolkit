@@ -1,0 +1,17 @@
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# nothing secret should live here, but just in case
+.env
+*.local
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# personal machine paths, not for sharing
+LOCAL.md

@@ -1,0 +1,33 @@
+# Minimal toolbox config for the local / dev warehouse.
+#
+# Used by the MCP Toolbox for Databases (Google, https://github.com/googleapis/genai-toolbox).
+# Copy to the repo root as `toolbox-local.yaml`, adjust the names, and keep the
+# real credentials in environment variables — this file is committed, the
+# credentials are not. A `toolbox-production.yaml` alongside it follows the same
+# shape, pointing at the prod host and exposing a read-only tool.
+#
+# The tool name you choose here (`query_<db>` below) is the name the skills
+# preflight-check for, and the one to record in the project's CLAUDE.md.
+
+sources:
+  # <db> = the project's short database name, e.g. `nimbus`.
+  <db>-local:
+    kind: postgres
+    host: ${POSTGRES_HOST:127.0.0.1}
+    port: ${POSTGRES_PORT:5432}
+    database: <db>
+    user: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+
+tools:
+  query_<db>:
+    kind: postgres-execute-sql
+    source: <db>-local
+    description: >-
+      Run a SQL query against the local <db> warehouse (Mage raw schemas and the
+      dbt staging / intermediate / marts / reporting layers). Use for inspecting
+      tables, row counts and dbt model output.
+
+toolsets:
+  <db>:
+    - query_<db>

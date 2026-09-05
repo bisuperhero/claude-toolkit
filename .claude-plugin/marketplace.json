@@ -1,0 +1,23 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "bisuperhero-claude-toolkit",
+  "description": "Claude Code plugins for data work: Mage.ai + dbt pipelines and Power BI report/semantic-model editing.",
+  "owner": {
+    "name": "BISuperhero",
+    "email": "robert@bisuperhero.cz"
+  },
+  "plugins": [
+    {
+      "name": "mage-dbt-toolkit",
+      "description": "Conventions and skills for Mage.ai (OSS) + dbt + PostgreSQL pipelines: shared Mage/dbt mechanics, new-pipeline scaffolding, GlitchTip error triage, a Conventional Commits standard, and a reusable CLAUDE.md template with a worked example.",
+      "category": "data",
+      "source": "./mage-dbt-toolkit"
+    },
+    {
+      "name": "powerbi-toolkit",
+      "description": "Edit Power BI reports and semantic models (PBIR/TMDL) from the repo: Tabular Editor CLI, PBIR authoring CLI, Desktop bridge, safe edit protocol, and a per-project layout standard.",
+      "category": "data",
+      "source": "./powerbi-toolkit"
+    }
+  ]
+}

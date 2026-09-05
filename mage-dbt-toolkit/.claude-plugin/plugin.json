@@ -1,0 +1,9 @@
+{
+  "name": "mage-dbt-toolkit",
+  "description": "Conventions and skills for Mage.ai (OSS) + dbt + PostgreSQL pipelines: shared Mage/dbt mechanics, new-pipeline scaffolding, GlitchTip error triage, a Conventional Commits standard, and a reusable CLAUDE.md template with a worked example. The /init-project command drafts a new repo's CLAUDE.md from what the repo already says and audits it for leftover placeholders.",
+  "version": "1.2.0",
+  "author": {
+    "name": "BISuperhero",
+    "email": "robert@bisuperhero.cz"
+  }
+}
