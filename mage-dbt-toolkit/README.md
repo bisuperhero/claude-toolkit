@@ -18,7 +18,8 @@ mage-dbt-toolkit/
 ├── skills/
 │   ├── mage-dbt-conventions/SKILL.md   # shared Mage/dbt mechanics + toolbox DB access
 │   ├── mage-new-pipeline/SKILL.md      # scaffold a new extraction pipeline (3-block vs streaming 2-block)
-│   └── glitchtip-triage/SKILL.md       # find + fix the top GlitchTip error (interactive)
+│   ├── glitchtip-triage/SKILL.md       # find + fix the top GlitchTip error (interactive)
+│   └── dbt-ship/SKILL.md               # /dbt-ship — pre-push gate for a dbt change (manual only)
 └── templates/
     ├── CLAUDE.template.md              # copy → <repo>/CLAUDE.md, fill {{PLACEHOLDERS}}
     ├── EXAMPLE-filled-CLAUDE.md        # the template filled in for a fictional project

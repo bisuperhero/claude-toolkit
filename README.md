@@ -48,7 +48,7 @@ Install commands and verification steps for each are in `INSTALL.md`.
 
 Install only what a repo needs — data work and report work are orthogonal.
 Verify with `/plugin`; you should see the skills `mage-dbt-conventions`,
-`mage-new-pipeline`, `glitchtip-triage`, `powerbi-report-editing` and the
+`mage-new-pipeline`, `glitchtip-triage`, `dbt-ship`, `powerbi-report-editing` and the
 commands `/powerbi-toolkit:preflight`, `/powerbi-toolkit:doctor`,
 `/powerbi-toolkit:describe-measures`,
 `/powerbi-toolkit:measure-catalog`. Commands installed from a plugin are
