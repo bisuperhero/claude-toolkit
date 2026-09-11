@@ -140,3 +140,11 @@ for routine work; only reach for production when explicitly required, and treat 
 as read-only unless told otherwise. The exact tool names are generated from the
 yaml (commonly `query_<db>` / `query_<db>_production`); list available MCP tools to
 get the precise names for the current project rather than guessing.
+
+## Querying through the toolbox (Postgres)
+- The prod tool is a read-only role with `statement_timeout`; dev is a truncated sample — use prod for validation, not for exploration.
+- `TaskStop` kills only the MCP client; the query keeps running on the server. After `TaskStop`, check `pg_stat_activity` and, if needed, `pg_cancel_backend(pid)` (only when the user says so).
+- Rewrite a correlated aggregate (`LEFT JOIN LATERAL`, subquery) over a large table as a standalone `GROUP BY` CTE and join that.
+- Don't start another heavy query while the previous one is still hanging. Never run two `dbt run`s in parallel.
+- Rankings: explicit `NULLS LAST`. A double `BEGIN` in the log is dbt, not an error.
+- GlitchTip: fingerprint per run; Mage triggers aren't in the repo; orphaned block run = check the pipeline UUID.
