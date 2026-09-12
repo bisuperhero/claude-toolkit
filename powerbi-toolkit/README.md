@@ -17,8 +17,18 @@ powerbi-toolkit/
 │   ├── doctor.md                    # /doctor — run every check over the repo and triage the result
 │   ├── describe-measures.md         # /describe-measures — write missing measure descriptions, backfill DAX blocks
 │   ├── measure-catalog.md           # /measure-catalog — build or refresh the measure catalog, then verify it
-│   └── dax-optimizer-report.md      # /dax-optimizer-report — run DAX Optimizer (1 licence run, with consent), write the issues report
+│   ├── dax-optimizer-report.md      # /dax-optimizer-report — run DAX Optimizer (1 licence run, with consent), write the issues report
+│   └── dax-optimizer-fix.md         # /dax-optimizer-fix — propose, approve, apply, verify and log fixes from a report
 └── skills/
+    ├── dax-optimizer-fix/
+    │   ├── SKILL.md                     # protocol: select → plan → approve (per rule / per issue) → baseline → edit TMDL → compare → commit → fix log
+    │   ├── references/
+    │   │   ├── fix-playbook.md          # one entry per DAX Optimizer rule: class, rewrite pattern, equivalence traps, what to verify
+    │   │   └── verification.md          # before/after value comparison against Desktop through dscmd.exe
+    │   └── scripts/
+    │       ├── daxopt-select.py         # pick a report (newest by default), filter issues, emit DAX + fingerprints + TMDL location
+    │       ├── daxopt-verify.py         # discover / baseline / compare measure values on a running Desktop
+    │       └── daxopt-fixlog.py         # upsert <report>_fixes.md rows: status, verified, commit, note
     ├── dax-optimizer-report/
     │   ├── SKILL.md                     # protocol: login in the browser, VPAX, consent, analyze, render — never edits DAX
     │   ├── references/
@@ -86,11 +96,30 @@ stable fingerprints a later fix pass uses. Facts worth knowing before the first 
 - **VPAX comes from an existing file or from a running Desktop** via DAX Studio's
   `dscmd.exe` (Windows). Obfuscated uploads are supported and analysed identically,
   but fingerprints differ from plain uploads — one mode per model, forever.
-- The skill **never edits a measure**. Proposing and applying fixes is a separate,
-  not yet written skill that consumes the report.
+- The skill **never edits a measure**. That is `dax-optimizer-fix`, below.
 
 It needs the `daxoptimizer` CLI and, for the Desktop source, DAX Studio;
 `preflight.py` reports both as optional rows.
+
+### Fixing what the report found
+
+`dax-optimizer-fix` takes a report (the newest one by default) and some or all
+of its numbered issues, and works through them:
+
+- **Plan first.** Per rule, the class from `references/fix-playbook.md`
+  (mechanical: a provably identical rewrite such as `DATEDIFF(…, DAY)` →
+  subtraction; judgment: anything that moves a context transition or replaces a
+  `FILTER`), a diff per issue, and the equivalence traps that apply.
+- **Approval is hybrid.** Mechanical rules are approved as one batch per rule,
+  judgment rules one issue at a time; the user can override for a run.
+- **Verified, not trusted.** DAX Optimizer scores are static estimates, so every
+  applied change is proven by a before/after comparison of the measure's values
+  on a running Desktop (`daxopt-verify.py`, through DAX Studio's `dscmd.exe`): a
+  difference reverts the measure unless the user explicitly accepts it. No
+  Desktop on the platform → the skill proposes, logs `proposed`, and stops.
+- **Edits go to TMDL in the repo with Desktop closed**, by the report-editing
+  skill's rules, one commit per rule; outcomes land in `<report>_fixes.md`,
+  keyed by the issue fingerprints so a later report can be diffed against it.
 
 ## How it works
 
@@ -151,5 +180,5 @@ out of `te`'s own banner and warns inside 30 days.
   the `DataModel` part stay untouched.
 - No offline DAX validation. Nothing here parses or type-checks DAX without a
   live model; that is Desktop's or the Modeling MCP's job.
-- No automatic DAX rewrites. `dax-optimizer-report` reports; applying fixes is a
-  separate skill, and it will ask before touching a measure.
+- No unattended DAX rewrites. `dax-optimizer-fix` applies only what was approved
+  and verified; `dax-optimizer-report` never edits at all.

@@ -5,12 +5,12 @@ A Claude Code **plugin marketplace** with two plugins for data work:
 | Plugin | What it gives you |
 |---|---|
 | **mage-dbt-toolkit** | Conventions for Mage.ai (OSS) + dbt + PostgreSQL pipelines: block structure, dbt layering, new-pipeline scaffolding, GlitchTip error triage, a commit standard, and a reusable `CLAUDE.md` template. |
-| **powerbi-toolkit** | Editing Power BI reports and semantic models (PBIR/TMDL) straight from the repo: Tabular Editor CLI, the PBIR authoring CLI, a Desktop bridge, a safe edit protocol, pre-commit checkers for defects the official validator misses, a per-project layout standard, and a DAX Optimizer report skill (official CLI, user's own login, one licence run per analysis). |
+| **powerbi-toolkit** | Editing Power BI reports and semantic models (PBIR/TMDL) straight from the repo: Tabular Editor CLI, the PBIR authoring CLI, a Desktop bridge, a safe edit protocol, pre-commit checkers for defects the official validator misses, a per-project layout standard, and two DAX Optimizer skills — report (official CLI, user's own login, one licence run per analysis) and fix (approved, verified rewrites). |
 
 `mage-dbt-toolkit` is purely **skill-based**, so it costs no context until Claude
-actually needs it. `powerbi-toolkit` is skill-based too, plus five slash commands
+actually needs it. `powerbi-toolkit` is skill-based too, plus six slash commands
 for the routine jobs (`preflight`, `doctor`, `describe-measures`,
-`measure-catalog`, `dax-optimizer-report`).
+`measure-catalog`, `dax-optimizer-report`, `dax-optimizer-fix`).
 
 ## Supported environments
 
@@ -49,9 +49,10 @@ Install commands and verification steps for each are in `INSTALL.md`.
 Install only what a repo needs — data work and report work are orthogonal.
 Verify with `/plugin`; you should see the skills `mage-dbt-conventions`,
 `mage-new-pipeline`, `glitchtip-triage`, `dbt-ship`, `powerbi-report-editing`,
-`dax-optimizer-report` and the commands `/powerbi-toolkit:preflight`,
-`/powerbi-toolkit:doctor`, `/powerbi-toolkit:describe-measures`,
-`/powerbi-toolkit:measure-catalog`, `/powerbi-toolkit:dax-optimizer-report`. Commands installed from a plugin are
+`dax-optimizer-report`, `dax-optimizer-fix` and the commands
+`/powerbi-toolkit:preflight`, `/powerbi-toolkit:doctor`,
+`/powerbi-toolkit:describe-measures`, `/powerbi-toolkit:measure-catalog`,
+`/powerbi-toolkit:dax-optimizer-report`, `/powerbi-toolkit:dax-optimizer-fix`. Commands installed from a plugin are
 namespaced with the plugin's name, so it is always the prefixed form you type.
 
 ### Updating

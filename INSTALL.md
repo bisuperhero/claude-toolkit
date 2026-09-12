@@ -21,10 +21,10 @@ Working on the toolkit itself? Clone it somewhere stable (e.g.
 
 Verify with `/plugin` — you should see the skills available:
 `mage-dbt-conventions`, `mage-new-pipeline`, `glitchtip-triage`,
-`powerbi-report-editing`, `dax-optimizer-report`, and the commands
-`/powerbi-toolkit:preflight`, `/powerbi-toolkit:doctor`,
+`powerbi-report-editing`, `dax-optimizer-report`, `dax-optimizer-fix`, and the
+commands `/powerbi-toolkit:preflight`, `/powerbi-toolkit:doctor`,
 `/powerbi-toolkit:describe-measures`, `/powerbi-toolkit:measure-catalog`,
-`/powerbi-toolkit:dax-optimizer-report`.
+`/powerbi-toolkit:dax-optimizer-report`, `/powerbi-toolkit:dax-optimizer-fix`.
 
 Pull in later changes with:
 
