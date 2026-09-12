@@ -3,7 +3,9 @@
 
 The skill drives four tools it does not install -- the Tabular Editor CLI, the
 PBIR authoring CLI, the Power BI Desktop bridge and (optionally) the Modeling
-MCP server. Until now nothing verified them, so a missing one surfaced as
+MCP server -- and the sibling dax-optimizer-report skill adds two optional ones,
+the DAX Optimizer CLI and DAX Studio's dscmd.exe. Until now nothing verified
+them, so a missing one surfaced as
 `command not found` in the middle of an edit, several steps after the point
 where it could still have been planned around.
 
@@ -366,6 +368,96 @@ def check_modeling_mcp(plat):
 # report
 # --------------------------------------------------------------------------- #
 
+def check_dax_optimizer_cli(plat, quick):
+    """Optional: the DAX Optimizer CLI (`daxoptimizer`, NuGet Dax.Optimizer.CLI).
+
+    Only the dax-optimizer-report skill uses it. It is a cross-platform .NET
+    tool, but this toolkit runs it on the Windows side (the browser login and
+    the VPAX extraction from Desktop live there), so on WSL the probe goes
+    through powershell.exe like the bridge does.
+    """
+    without = ["the dax-optimizer-report skill: uploading a VPAX to DAX Optimizer "
+               "and fetching the analysis JSON."]
+    still = ["everything else in the toolkit; and daxopt-report.py can still render "
+             "a result zip someone else produced."]
+    install = ['powershell.exe -NoProfile -Command "dotnet tool install --global '
+               'Dax.Optimizer.CLI --add-source https://api.nuget.org/v3/index.json"',
+               "(needs the .NET SDK on Windows; without --add-source a machine whose",
+               "NuGet config lacks nuget.org fails with 'not found in NuGet feeds')."]
+    if quick:
+        return Tool("daxoptimizer (DAX Optimizer CLI)", NA, tier="optional",
+                    notes=["--quick: the probe was skipped."])
+    if plat == "windows":
+        if not shutil.which("daxoptimizer"):
+            return Tool("daxoptimizer (DAX Optimizer CLI)", MISSING, tier="optional",
+                        without=without, still=still, install=install)
+        code, out = run(["daxoptimizer", "--version"], timeout=60)
+    elif plat == "wsl":
+        if not shutil.which("powershell.exe"):
+            return Tool("daxoptimizer (DAX Optimizer CLI)", MISSING, tier="optional",
+                        without=without, still=still,
+                        install=["needs powershell.exe first -- see the row above."])
+        code, out = run(["powershell.exe", "-NoProfile", "-Command",
+                         "daxoptimizer --version"], timeout=60)
+    else:
+        exe = shutil.which("daxoptimizer")
+        if not exe:
+            return Tool("daxoptimizer (DAX Optimizer CLI)", MISSING, tier="optional",
+                        without=without, still=still,
+                        install=["dotnet tool install --global Dax.Optimizer.CLI",
+                                 "(cross-platform; the browser login must be able to "
+                                 "open a browser from here)."])
+        code, out = run([exe, "--version"], timeout=60)
+    version = first_version(out)
+    if code != 0 or not version:
+        return Tool("daxoptimizer (DAX Optimizer CLI)", MISSING, tier="optional",
+                    without=without, still=still, install=install,
+                    notes=["probe returned no version" +
+                           (" (exit %s)" % code if code is not None else "")])
+    return Tool("daxoptimizer (DAX Optimizer CLI)", OK, version, tier="optional",
+                without=without, still=still,
+                notes=["login state is not checked here -- the skill runs "
+                       "`daxoptimizer account show` before it needs the service."])
+
+
+DSCMD_WINDOWS = r"C:\Program Files\DAX Studio\dscmd.exe"
+DSCMD_WSL = "/mnt/c/Program Files/DAX Studio/dscmd.exe"
+
+
+def check_dax_studio_cli(plat):
+    """Optional: DAX Studio's `dscmd.exe`, the VPAX extractor for a running Desktop.
+
+    Windows-only by nature (it talks to the local Analysis Services instance
+    that Power BI Desktop starts). The version is in the banner of any command.
+    """
+    without = ["extracting a VPAX from a running Power BI Desktop for the "
+               "dax-optimizer-report skill (the `desktop` source)."]
+    still = ["the `file` source: a .vpax exported from DAX Studio's GUI, "
+             "Tabular Editor 3 or Bravo."]
+    install = ["Install DAX Studio 3.x from https://daxstudio.org (the CLI ships "
+               "with it, as dscmd.exe next to DaxStudio.exe)."]
+    if not has_desktop(plat):
+        return Tool("dscmd.exe (DAX Studio CLI)", NA, tier="optional",
+                    without=without, still=still,
+                    notes=["needs a Windows Power BI Desktop to read from -- "
+                           "not something to install here."])
+    exe = DSCMD_WINDOWS if plat == "windows" else DSCMD_WSL
+    if not os.path.isfile(exe):
+        return Tool("dscmd.exe (DAX Studio CLI)", MISSING, tier="optional",
+                    without=without, still=still, install=install)
+    code, out = run([exe, "--help"], timeout=60)
+    # Banner reads "DSCMD  v3.6.0"; first_version() would stop at the word
+    # boundary after the "v" and report "6.0".
+    m = re.search(r"\bv(\d+\.\d+(?:\.\d+){0,2})\b", out or "")
+    version = m.group(1) if m else first_version(out)
+    if not version:
+        return Tool("dscmd.exe (DAX Studio CLI)", OK, "found", tier="optional",
+                    without=without, still=still,
+                    notes=["present, but its banner printed no version."])
+    return Tool("dscmd.exe (DAX Studio CLI)", OK, version, tier="optional",
+                without=without, still=still)
+
+
 def print_table(tools):
     head = ("Tool", "Status", "Version")
     rows = [(t.name, t.status, t.version or "-") for t in tools]
@@ -448,7 +540,8 @@ def main(argv=None):
 
     tools = [python_tool, check_tabular_editor(), check_report_author(),
              check_powershell(plat), check_desktop_bridge(plat, a.quick),
-             check_modeling_mcp(plat)]
+             check_modeling_mcp(plat),
+             check_dax_optimizer_cli(plat, a.quick), check_dax_studio_cli(plat)]
 
     print_table(tools)
     for tool in tools:

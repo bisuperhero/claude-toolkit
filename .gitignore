@@ -15,3 +15,6 @@ __pycache__/
 
 # personal machine paths, not for sharing
 LOCAL.md
+
+# local sample outputs (client data, never shared)
+local-output/

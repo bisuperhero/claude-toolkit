@@ -1,7 +1,7 @@
 {
   "name": "powerbi-toolkit",
-  "description": "Edit Power BI reports and semantic models (PBIP: PBIR/TMDL) from the repo: a safe edit protocol for Desktop, a per-project layout standard, pre-commit checks for defects the official validator misses, a preflight check for the external tools it drives, bulk tools for visual naming and measure documentation, a self-updating measure catalog, and /preflight, /doctor, /describe-measures, /measure-catalog commands.",
-  "version": "1.5.0",
+  "description": "Edit Power BI reports and semantic models (PBIP: PBIR/TMDL) from the repo: a safe edit protocol for Desktop, a per-project layout standard, pre-commit checks for defects the official validator misses, a preflight check for the external tools it drives, bulk tools for visual naming and measure documentation, a self-updating measure catalog, a DAX Optimizer report skill (official CLI, browser login, one licence run per analysis), and /preflight, /doctor, /describe-measures, /measure-catalog, /dax-optimizer-report commands.",
+  "version": "1.6.0",
   "author": {
     "name": "BISuperhero",
     "email": "robert@bisuperhero.cz"

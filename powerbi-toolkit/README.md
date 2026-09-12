@@ -16,8 +16,17 @@ powerbi-toolkit/
 │   ├── preflight.md                 # /preflight — are the external tools installed, and what does each missing one cost?
 │   ├── doctor.md                    # /doctor — run every check over the repo and triage the result
 │   ├── describe-measures.md         # /describe-measures — write missing measure descriptions, backfill DAX blocks
-│   └── measure-catalog.md           # /measure-catalog — build or refresh the measure catalog, then verify it
+│   ├── measure-catalog.md           # /measure-catalog — build or refresh the measure catalog, then verify it
+│   └── dax-optimizer-report.md      # /dax-optimizer-report — run DAX Optimizer (1 licence run, with consent), write the issues report
 └── skills/
+    ├── dax-optimizer-report/
+    │   ├── SKILL.md                     # protocol: login in the browser, VPAX, consent, analyze, render — never edits DAX
+    │   ├── references/
+    │   │   ├── cli.md                   # the official `daxoptimizer` CLI: install, browser login, analyze, run economics
+    │   │   ├── vpax-extraction.md       # existing file / dscmd.exe from a running Desktop / XMLA; obfuscation and its cost
+    │   │   └── result-json.md           # DaxOptimizer.json as observed, fingerprints, deobfuscation
+    │   └── scripts/
+    │       └── daxopt-report.py         # result zip → numbered Markdown report (+ --dict, --model, --meta)
     └── powerbi-report-editing/
         ├── SKILL.md                     # router: where things live, tools, safe edit protocol, pre-commit checks
         ├── references/
@@ -58,6 +67,31 @@ task at hand, so a theme tweak doesn't pull in the whole corpus.
 /plugin install powerbi-toolkit@bisuperhero-claude-toolkit
 ```
 
+## DAX Optimizer report
+
+`dax-optimizer-report` sends a model's VPAX to [DAX Optimizer](https://www.daxoptimizer.com/)
+through Tabular Tools' official `daxoptimizer` CLI and renders the analysis as
+`docs/dax-optimizer/<YYYY-MM-DD_HHMM>_<model>.md` (named after the run, so the
+folder is a history): two overview tables (issues by relevance,
+rules), one numbered section per issue with the flagged DAX, reach and a
+knowledge-base link, a "not analysed" list, and a technical section with the
+stable fingerprints a later fix pass uses. Facts worth knowing before the first run:
+
+- **Every analysis is one licence run** (Desktop licence: 20/day, 5 active models)
+  and sends the model's metadata to Tabular Tools' Azure region. The skill states
+  both and asks before each `analyze`; result zips are cached in
+  `.powerbi-cache/dax-optimizer/` so re-reading never costs a run.
+- **The user logs in themselves**, in the browser window the CLI opens — password
+  or Microsoft work account, no service account, no credentials in Claude.
+- **VPAX comes from an existing file or from a running Desktop** via DAX Studio's
+  `dscmd.exe` (Windows). Obfuscated uploads are supported and analysed identically,
+  but fingerprints differ from plain uploads — one mode per model, forever.
+- The skill **never edits a measure**. Proposing and applying fixes is a separate,
+  not yet written skill that consumes the report.
+
+It needs the `daxoptimizer` CLI and, for the Desktop source, DAX Studio;
+`preflight.py` reports both as optional rows.
+
 ## How it works
 
 - **Reports location**: stated in the project's `CLAUDE.md`. The reports either sit
@@ -96,6 +130,8 @@ protocol, screenshots and the catalog's final verification are out of reach.
 | `powerbi-report-author` | everything else | `preview-visuals` / `preview-pages` / `preview-filters` / `preview-themes`, `validate` |
 | Power BI Desktop / the bridge | everything offline | the safe edit protocol's `status` check, `reload`, screenshots, verifying a built catalog |
 | Power BI Modeling MCP (optional) | everything offline; live work falls back to the bridge or `te.exe --local` | MCP-driven edits to a live model |
+| `daxoptimizer` CLI (optional) | rendering a result zip someone else produced | running a DAX Optimizer analysis |
+| DAX Studio `dscmd.exe` (optional) | the `file` VPAX source | extracting a VPAX from a running Desktop |
 
 `preflight.py` reports exactly these rows for the machine it runs on, so the two
 never drift apart. An **expired** Tabular Editor counts as missing — see below.
@@ -115,3 +151,5 @@ out of `te`'s own banner and warns inside 30 days.
   the `DataModel` part stay untouched.
 - No offline DAX validation. Nothing here parses or type-checks DAX without a
   live model; that is Desktop's or the Modeling MCP's job.
+- No automatic DAX rewrites. `dax-optimizer-report` reports; applying fixes is a
+  separate skill, and it will ask before touching a measure.

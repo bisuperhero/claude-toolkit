@@ -21,9 +21,10 @@ Working on the toolkit itself? Clone it somewhere stable (e.g.
 
 Verify with `/plugin` — you should see the skills available:
 `mage-dbt-conventions`, `mage-new-pipeline`, `glitchtip-triage`,
-`powerbi-report-editing`, and the commands `/powerbi-toolkit:preflight`,
-`/powerbi-toolkit:doctor`, `/powerbi-toolkit:describe-measures`,
-`/powerbi-toolkit:measure-catalog`.
+`powerbi-report-editing`, `dax-optimizer-report`, and the commands
+`/powerbi-toolkit:preflight`, `/powerbi-toolkit:doctor`,
+`/powerbi-toolkit:describe-measures`, `/powerbi-toolkit:measure-catalog`,
+`/powerbi-toolkit:dax-optimizer-report`.
 
 Pull in later changes with:
 
@@ -93,6 +94,27 @@ Register it read-only; the default mode writes to a live model without
 confirmation. Details in the skill's `references/modeling-mcp.md`.
 
 Check: `claude mcp list` shows `powerbi-modeling` as connected.
+
+**DAX Optimizer CLI** *(optional, only for `dax-optimizer-report`)* — Tabular
+Tools' official `daxoptimizer` tool. Install it **on the Windows side** (it needs
+a browser for the login and sits next to Desktop for the VPAX extraction); the
+.NET SDK must already be there:
+
+```powershell
+dotnet tool install --global Dax.Optimizer.CLI --add-source https://api.nuget.org/v3/index.json
+```
+
+`--add-source` matters: a Windows NuGet config that lacks nuget.org fails with
+"not found in NuGet feeds" without it. From WSL the tool is always called as
+`powershell.exe -NoProfile -Command "daxoptimizer …"`. Check:
+`powershell.exe -NoProfile -Command "daxoptimizer --version"`. The first use then
+needs `daxoptimizer login --region <westeurope|eastus|australiaeast>`, which
+opens a browser for you to sign in — nothing else is stored.
+
+**DAX Studio** *(optional, same skill)* — its `dscmd.exe` extracts the VPAX from
+a running Power BI Desktop. Install DAX Studio 3.x from <https://daxstudio.org>
+on Windows; the CLI lands at `C:\Program Files\DAX Studio\dscmd.exe`. Not needed
+when you export the VPAX from DAX Studio's GUI, Tabular Editor 3 or Bravo yourself.
 
 ### Check them all at once
 
