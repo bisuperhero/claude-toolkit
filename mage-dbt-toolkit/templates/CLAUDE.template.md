@@ -111,6 +111,18 @@ project-specific facts here.)
 - Layout conventions for this project: see `POWERBI-LAYOUT.md` (created on first
   use).
 
+### DAX Optimizer
+
+<!-- Only if the model is registered at app.daxoptimizer.com; otherwise delete.
+     Ids come from `daxoptimizer workspace list` / `workspace model list`. -->
+
+- Region: `{{DAXOPT_REGION}}` (westeurope | eastus | australiaeast)
+- Workspace id: `{{DAXOPT_WORKSPACE_ID}}`
+- Models: `{{MODEL_NAME}}.SemanticModel` → model id `{{DAXOPT_MODEL_ID}}`
+- VPAX source: `desktop` (dscmd.exe from a running Desktop) | `file` (user-supplied)
+- Obfuscate uploads: no | yes — **never change this for a model once it has runs**
+- Reports: `docs/dax-optimizer/`; cache: `.powerbi-cache/dax-optimizer/` (gitignored)
+
 ## Commit messages
 
 Conventional Commits, no emojis — see `COMMIT-STANDARD.md`.

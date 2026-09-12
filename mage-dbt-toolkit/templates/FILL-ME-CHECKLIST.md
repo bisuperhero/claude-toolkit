@@ -93,6 +93,11 @@ below is the fallback for when the plugin is not installed.
       naming all legitimately differ per project. The skill itself holds no
       formatting values, so this file is the only place they live; record
       deliberate deviations in its section 10.
+- [ ] **DAX Optimizer** (only if the model is registered there) — fill the
+      "DAX Optimizer" subsection: region, workspace id, model id per semantic
+      model, VPAX source, and whether uploads are obfuscated. Add
+      `.powerbi-cache/` to the repo's `.gitignore`. Every analysis costs one
+      licence run, so the `dax-optimizer-report` skill asks before each one.
 
 ## 5. Commit messages
 
