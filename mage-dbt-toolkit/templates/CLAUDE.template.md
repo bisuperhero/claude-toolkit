@@ -122,6 +122,8 @@ project-specific facts here.)
 - VPAX source: `desktop` (dscmd.exe from a running Desktop) | `file` (user-supplied)
 - Obfuscate uploads: no | yes — **never change this for a model once it has runs**
 - Reports: `docs/dax-optimizer/`; cache: `.powerbi-cache/dax-optimizer/` (gitignored)
+- Verification columns for `dax-optimizer-fix` (`--by`): `'{{DATE_TABLE}}'[Year]`,
+  `'{{DIMENSION_TABLE}}'[{{DIMENSION_COLUMN}}]` — the columns measures are usually sliced by
 
 ## Commit messages
 
